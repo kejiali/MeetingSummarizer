@@ -1,6 +1,12 @@
 import SwiftUI
 
 struct ContentView: View {
+    private enum PendingTranscriptionStorage {
+        static let jobNameKey = "pendingTranscriptionJobName"
+        static let sourceFileNameKey = "pendingTranscriptionSourceFileName"
+    }
+
+    @EnvironmentObject private var resumeState: AppResumeState
     @StateObject private var recorder = AudioRecorder()
     @State private var status: AppStatus = .idle
     @State private var transcript: String = ""
@@ -14,6 +20,7 @@ struct ContentView: View {
     @State private var selectedTranscript: String?
     @State private var logs: [String] = []
     @State private var transcriptionProgress: String = ""
+    @State private var processingTask: Task<Void, Never>?
     @AppStorage("uploadedFiles") private var uploadedFilesData: Data = Data()
     
     private var uploadedFiles: Set<String> {
@@ -49,6 +56,16 @@ struct ContentView: View {
             ScrollViewReader { proxy in
                 ScrollView {
                     VStack(spacing: 24) {
+
+                        if !resumeState.statusMessage.isEmpty {
+                            Text(resumeState.statusMessage)
+                                .font(.subheadline)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 6)
+                                .background(Color.orange.opacity(0.15))
+                                .foregroundStyle(.orange)
+                                .clipShape(Capsule())
+                        }
 
                         // Status indicator
                         statusBadge
@@ -146,7 +163,7 @@ struct ContentView: View {
             .sheet(isPresented: $showFilePicker) {
                 AudioFilePicker { url in
                     showFilePicker = false  // Dismiss the picker
-                    Task {
+                    processingTask = Task {
                         await processLocalAudio(url)
                     }
                 }
@@ -155,6 +172,22 @@ struct ContentView: View {
                 if let transcript = newValue {
                     loadTranscript(transcript)
                 }
+            }
+            .onChange(of: resumeState.transcript) { _, newValue in
+                guard !newValue.isEmpty else { return }
+                transcript = newValue
+            }
+            .onChange(of: resumeState.summary) { _, newValue in
+                guard !newValue.isEmpty else { return }
+                summary = newValue
+                status = .done
+                addLog("Resumed transcription completed and summarized")
+            }
+            .onChange(of: resumeState.errorMessage) { _, newValue in
+                guard let newValue else { return }
+                addLog("ERROR: \(newValue)")
+                showError(message: newValue)
+                resumeState.consumeErrorMessage()
             }
         }
     }
@@ -192,23 +225,33 @@ struct ContentView: View {
     }
 
     private var progressSteps: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            StepRow(label: "Uploading to S3",    active: status == .uploading,    done: status.rawValue > AppStatus.uploading.rawValue)
-            StepRow(label: "Transcribing audio", active: status == .transcribing, done: status.rawValue > AppStatus.transcribing.rawValue)
-            
-            // Show transcription progress
-            if status == .transcribing && !transcriptionProgress.isEmpty {
-                Text(transcriptionProgress)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .padding(.leading, 30)
+        VStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 10) {
+                StepRow(label: "Uploading to S3",    active: status == .uploading,    done: status.rawValue > AppStatus.uploading.rawValue)
+                StepRow(label: "Transcribing audio", active: status == .transcribing, done: status.rawValue > AppStatus.transcribing.rawValue)
+                
+                // Show transcription progress
+                if status == .transcribing && !transcriptionProgress.isEmpty {
+                    Text(transcriptionProgress)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .padding(.leading, 30)
+                }
+                
+                StepRow(label: "Summarizing",        active: status == .summarizing,  done: status.rawValue > AppStatus.summarizing.rawValue)
             }
-            
-            StepRow(label: "Summarizing",        active: status == .summarizing,  done: status.rawValue > AppStatus.summarizing.rawValue)
+            .padding()
+            .background(Color(.secondarySystemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+
+            Button(role: .destructive) {
+                cancelProcessing()
+            } label: {
+                Label("Cancel", systemImage: "xmark.circle.fill")
+                    .font(.subheadline)
+            }
+            .buttonStyle(.bordered)
         }
-        .padding()
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
     private var summaryView: some View {
@@ -329,6 +372,16 @@ struct ContentView: View {
         print(message)
     }
 
+    private func savePendingTranscription(jobName: String, sourceFileName: String) {
+        UserDefaults.standard.set(jobName, forKey: PendingTranscriptionStorage.jobNameKey)
+        UserDefaults.standard.set(sourceFileName, forKey: PendingTranscriptionStorage.sourceFileNameKey)
+    }
+
+    private func clearPendingTranscription() {
+        UserDefaults.standard.removeObject(forKey: PendingTranscriptionStorage.jobNameKey)
+        UserDefaults.standard.removeObject(forKey: PendingTranscriptionStorage.sourceFileNameKey)
+    }
+
     // MARK: - Actions
 
     private func loadTranscript(_ transcriptText: String) {
@@ -363,7 +416,7 @@ struct ContentView: View {
         if recorder.isRecording {
             recorder.stopRecording()
             addLog("Recording stopped")
-            Task { await processRecording() }
+            processingTask = Task { await processRecording() }
         } else {
             summary = ""
             transcript = ""
@@ -397,6 +450,7 @@ struct ContentView: View {
             let jobName = "meeting-\(Int(Date().timeIntervalSince1970))"
             addLog("Starting transcription job: \(jobName)")
             try await aws.startTranscriptionJob(s3URI: s3URI, jobName: jobName)
+            savePendingTranscription(jobName: jobName, sourceFileName: fileURL.lastPathComponent)
             addLog("Polling for transcription...")
             
             transcript = try await aws.pollTranscriptionJob(jobName: jobName) { progress in
@@ -404,6 +458,7 @@ struct ContentView: View {
                     transcriptionProgress = progress
                 }
             }
+            clearPendingTranscription()
             
             transcriptionProgress = ""
             addLog("Transcription complete: \(transcript.count) characters")
@@ -418,9 +473,21 @@ struct ContentView: View {
             status = .done
             addLog("All processing complete!")
         } catch {
+            if let awsError = error as? AWSError, awsError == .transcribeFailed || awsError == .timeout {
+                clearPendingTranscription()
+            }
             addLog("ERROR: \(error.localizedDescription)")
             showError(message: error.localizedDescription)
         }
+    }
+
+    private func cancelProcessing() {
+        processingTask?.cancel()
+        processingTask = nil
+        clearPendingTranscription()
+        transcriptionProgress = ""
+        status = .idle
+        addLog("Processing cancelled by user")
     }
 
     private func showError(message: String) {
@@ -492,6 +559,7 @@ struct ContentView: View {
             let jobName = "local-\(Int(Date().timeIntervalSince1970))"
             addLog("Starting transcription job: \(jobName)")
             try await aws.startTranscriptionJob(s3URI: s3URI, jobName: jobName)
+            savePendingTranscription(jobName: jobName, sourceFileName: fileName)
             addLog("Polling for transcription...")
             
             transcript = try await aws.pollTranscriptionJob(jobName: jobName) { progress in
@@ -499,6 +567,7 @@ struct ContentView: View {
                     transcriptionProgress = progress
                 }
             }
+            clearPendingTranscription()
             
             transcriptionProgress = ""
             addLog("Transcription complete: \(transcript.count) characters")
@@ -517,6 +586,9 @@ struct ContentView: View {
             status = .done
             addLog("All processing complete!")
         } catch {
+            if let awsError = error as? AWSError, awsError == .transcribeFailed || awsError == .timeout {
+                clearPendingTranscription()
+            }
             addLog("ERROR: \(error.localizedDescription)")
             showError(message: error.localizedDescription)
         }

@@ -381,7 +381,7 @@ class AWSService {
     }
 }
 
-enum AWSError: Error, LocalizedError {
+enum AWSError: Error, LocalizedError, Equatable {
     case uploadFailed
     case transcribeFailed
     case timeout
