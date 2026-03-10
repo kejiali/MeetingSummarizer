@@ -89,6 +89,17 @@ See [QUICK_START_GUIDE.md](QUICK_START_GUIDE.md) for a walkthrough of each featu
 - Single language support (English)
 - No iCloud sync between devices
 
+## Roadmap
+
+See [TODO.md](TODO.md) for the full list of planned improvements. Highlights for the next release:
+
+- Migrate credentials to AWS Cognito Identity Pools (no hardcoded keys)
+- Background processing — resume transcription if app is backgrounded
+- Exponential backoff for transcription polling
+- Multi-language support (AWS Transcribe supports 30+ languages)
+- Persist chat history per meeting
+- Speaker identification (AWS Transcribe diarization)
+
 ## Built With AI
 
 This app was built in ~2 hours using [Amazon Kiro](https://kiro.dev) — an AI-powered IDE that supports spec-driven and vibe coding workflows. The architecture, features, and implementation were created and designed by me, but developed through Kiro's agentic coding experience.
