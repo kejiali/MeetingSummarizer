@@ -644,18 +644,18 @@ Only S3 uploads implement retry (network errors only, max 3 attempts, 2s delay).
 
 ## 10. Known Limitations & Future Work
 
-| Area | Current State | Planned Improvement |
-|------|--------------|---------------------|
-| **Credential security** | Hardcoded in `Config.swift` | Migrate to AWS Cognito Identity Pools |
-| **Chat history** | Not persisted; resets each session | Save conversation per meeting to Core Data |
-| **Background processing** | App must stay open during transcription | Save job name; resume polling on next open |
-| **Transcription polling** | Fixed 10s interval, 60 attempts max | Exponential backoff; better timeout UX |
-| **Language support** | English (`en-US`) only | Language picker (AWS Transcribe supports 30+) |
-| **Speaker diarization** | Not implemented | AWS Transcribe supports "who said what" |
-| **Core Data summaries** | Not fully wired | Persist summaries across app launches |
-| **Export formats** | Plain text share sheet only | PDF export with formatted layout |
-| **iCloud sync** | Device-local only | Sync transcripts/summaries via CloudKit |
-| **Offline transcription** | Not available | Local speech-to-text (iOS 17 `SFSpeechRecognizer`) |
+| Priority | Area | Current State | Planned Improvement |
+|----------|------|--------------|---------------------|
+| 🔴 High | **Credential security** | Hardcoded in `Config.swift` | Migrate to AWS Cognito Identity Pools |
+| 🔴 High | **Background processing** | App must stay open during transcription | Save job name; resume polling on next open |
+| 🔴 High | **Transcription polling** | Fixed 10s interval, 60 attempts max | Exponential backoff; better timeout UX |
+| 🟡 Medium | **Chat history** | Not persisted; resets each session | Save conversation per meeting to Core Data |
+| 🟡 Medium | **Core Data summaries** | Not fully wired | Persist summaries across app launches |
+| 🟡 Medium | **Language support** | English (`en-US`) only | Language picker (AWS Transcribe supports 30+) |
+| 🟡 Medium | **Speaker diarization** | Not implemented | AWS Transcribe supports "who said what" |
+| 🟢 Low | **Export formats** | Plain text share sheet only | PDF export with formatted layout |
+| 🟢 Low | **iCloud sync** | Device-local only | Sync transcripts/summaries via CloudKit |
+| 🟢 Low | **Offline transcription** | Not available | Local speech-to-text (iOS 17 `SFSpeechRecognizer`) |
 
 ---
 
