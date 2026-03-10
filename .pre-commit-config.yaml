@@ -1,0 +1,5 @@
+repos:
+  - repo: https://github.com/awslabs/automated-security-helper
+    rev: v3.2.3
+    hooks:
+      - id: ash-simple-scan

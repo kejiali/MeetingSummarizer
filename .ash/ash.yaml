@@ -1,0 +1,6 @@
+project_name: meeting-summarizer
+global_settings:
+  severity_threshold: MEDIUM
+  ignore_paths:
+    - path: 'MeetingSummarizer/Config.swift'
+      reason: 'Local credentials file - excluded from git via .gitignore, never committed'

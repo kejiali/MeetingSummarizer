@@ -1,10 +1,3 @@
-//
-//  MeetingSummarizerApp.swift
-//  MeetingSummarizer
-//
-//  Created by Li on 10/03/2026.
-//
-
 import SwiftUI
 import CoreData
 

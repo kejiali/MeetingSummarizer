@@ -10,9 +10,22 @@
 		0A3667492F60231C000DF541 /* MeetingSummarizer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeetingSummarizer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		0AF096862F6028E20025DDD3 /* Exceptions for "MeetingSummarizer" folder in "MeetingSummarizer" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 0A3667482F60231B000DF541 /* MeetingSummarizer */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		0A36674B2F60231C000DF541 /* MeetingSummarizer */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0AF096862F6028E20025DDD3 /* Exceptions for "MeetingSummarizer" folder in "MeetingSummarizer" target */,
+			);
 			path = MeetingSummarizer;
 			sourceTree = "<group>";
 		};
@@ -251,8 +264,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QUQ4TP8PU9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MeetingSummarizer/Info.plist;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "This app records your meetings to generate AI-powered summaries";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -282,8 +298,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QUQ4TP8PU9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MeetingSummarizer/Info.plist;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "This app records your meetings to generate AI-powered summaries";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
