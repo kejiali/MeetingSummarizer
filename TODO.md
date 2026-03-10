@@ -28,7 +28,8 @@ Based on pre-publish review and improvement discussion (March 2026).
 
 ### Medium Priority
 - [ ] **Transcription polling** — replace fixed 60-attempt loop with exponential backoff + better "still working…" UI state
-- [ ] **Background processing** — resume polling if user locks phone mid-transcription (save job ID, pick up on reopen)
+- [x] **Background processing** — saves job on start; resumes polling on app reopen; shows "Resuming transcription..." status
+- [x] **Cancel processing** — cancel button stops upload/transcription/summarisation and releases microphone
 - [ ] **Multi-language support** — add language picker (AWS Transcribe supports 30+ languages)
 - [ ] **Persist chat history** — save conversation history per meeting, currently resets each session
 
