@@ -96,7 +96,6 @@ For a deep dive into how everything works under the hood, see [DESIGN.md](DESIGN
 See [TODO.md](TODO.md) for the full list of planned improvements. Highlights for the next release:
 
 - Migrate credentials to AWS Cognito Identity Pools (no hardcoded keys)
-- Background processing — resume transcription if app is backgrounded
 - Exponential backoff for transcription polling
 - Multi-language support (AWS Transcribe supports 30+ languages)
 - Persist chat history per meeting

@@ -647,7 +647,8 @@ Only S3 uploads implement retry (network errors only, max 3 attempts, 2s delay).
 | Priority | Area | Current State | Planned Improvement |
 |----------|------|--------------|---------------------|
 | 🔴 High | **Credential security** | Hardcoded in `Config.swift` | Migrate to AWS Cognito Identity Pools |
-| 🔴 High | **Background processing** | App must stay open during transcription | Save job name; resume polling on next open |
+| ✅ Done | **Background processing** | Saves job name on start; resumes polling on app reopen | Implemented |
+| ✅ Done | **Cancel processing** | Cancel button stops pipeline, releases microphone, resets UI | Implemented |
 | 🔴 High | **Transcription polling** | Fixed 10s interval, 60 attempts max | Exponential backoff; better timeout UX |
 | 🟡 Medium | **Chat history** | Not persisted; resets each session | Save conversation per meeting to Core Data |
 | 🟡 Medium | **Core Data summaries** | Not fully wired | Persist summaries across app launches |
