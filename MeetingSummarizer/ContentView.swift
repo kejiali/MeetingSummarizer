@@ -484,6 +484,9 @@ struct ContentView: View {
     private func cancelProcessing() {
         processingTask?.cancel()
         processingTask = nil
+        if recorder.isRecording {
+            recorder.stopRecording()
+        }
         clearPendingTranscription()
         transcriptionProgress = ""
         status = .idle
