@@ -43,7 +43,7 @@ Meeting Summarizer is an iOS app that records or imports audio, transcribes it u
 │              AWS (eu-west-1)                │
 │                                             │
 │   S3 ──► AWS Transcribe ──► AWS Bedrock     │
-│  (audio)   (speech-to-text)  (Claude Haiku) │
+│  (audio)   (speech-to-text)  (Claude Haiku 4.5) │
 └─────────────────────────────────────────────┘
 ```
 
@@ -61,7 +61,7 @@ enum Config {
     static let awsSecretKey = "YOUR_AWS_SECRET_KEY"  # pragma: allowlist secret
     static let awsRegion    = "eu-west-1"
     static let s3Bucket     = "your-s3-bucket-name"
-    static let bedrockModel = "anthropic.claude-3-haiku-20240307-v1:0"
+    static let bedrockModel = "eu.anthropic.claude-haiku-4-5-20251001-v1:0"
 }
 ```
 
@@ -260,7 +260,7 @@ Fetch transcript JSON → extract text
 Save to TranscriptCache
       │
       ▼
-BedrockService.summarize() → Claude Haiku
+BedrockService.summarize() → Claude Haiku 4.5
       │
       ▼
 Display summary + enable Chat

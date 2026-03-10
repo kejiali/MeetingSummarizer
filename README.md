@@ -33,7 +33,7 @@ enum Config {
     static let awsSecretKey = "YOUR_AWS_SECRET_KEY"  # pragma: allowlist secret
     static let awsRegion    = "eu-west-1"
     static let s3Bucket     = "your-s3-bucket-name"
-    static let bedrockModel = "anthropic.claude-3-haiku-20240307-v1:0"
+    static let bedrockModel = "eu.anthropic.claude-haiku-4-5-20251001-v1:0"  # pragma: allowlist secret
 }
 ```
 
