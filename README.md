@@ -72,6 +72,8 @@ enum Config {
 
 See [QUICK_START_GUIDE.md](QUICK_START_GUIDE.md) for a walkthrough of each feature.
 
+For a deep dive into how everything works under the hood, see [DESIGN.md](DESIGN.md).
+
 ## Architecture
 
 - **SwiftUI** — UI layer
