@@ -221,12 +221,8 @@ struct ContentView: View {
         }
         .disabled(status == .processing)
         .scaleEffect(recorder.isRecording ? 1.05 : 1.0)
-        .animation(
-            recorder.isRecording
-                ? .easeInOut(duration: 0.8).repeatForever(autoreverses: true)
-                : .default,
-            value: recorder.isRecording
-        )
+        .animation(recorder.isRecording ? .easeInOut(duration: 0.8).repeatForever(autoreverses: true) : .none, value: recorder.isRecording)
+        .id(recorder.isRecording) // forces SwiftUI to rebuild the view and kill the animation
     }
 
     private var progressSteps: some View {
